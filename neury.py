@@ -7,6 +7,7 @@ from fuzzywuzzy import fuzz
 import pyttsx3
 import datetime
 import pyowm
+import webbrowser
 
 
  
@@ -112,7 +113,10 @@ def execute_cmd(cmd):
     	acmd = recognize_acmd(acmd)
     	execute_acmd(acmd["acmd"])
     else:
-        print('Извините, я не расслышала, что Вы сказали...')
+        search = voice
+        url = "https://www.google.com/search?q="+search
+        webbrowser.open(url)
+        speak('Вот, что мне удалось найти в интернете по данному запросу')
 
 def recognize_acmd(acmd):
     RC = {'acmd': '', 'percent': 0}
@@ -135,12 +139,9 @@ m = sr.Microphone(device_index = 4)
 with m as source:
     r.adjust_for_ambient_noise(source)
 speak_engine = pyttsx3.init()
- 
 
-#voices = speak_engine.getProperty('voices')
-#speak_engine.setProperty('voice', voices[4].id)
 
- 
+
 speak("Здравствуйте, пользователь!")
 speak("Мое имя Вики")
 speak("Жду Ваших указаний...")
