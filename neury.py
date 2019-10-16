@@ -8,6 +8,9 @@ import pyttsx3
 import datetime
 import pyowm
 import webbrowser
+import random
+import platform
+import subprocess
 
 
  
@@ -22,7 +25,7 @@ opts = {
         "fjokes": ('расскажи анекдот','рассмеши меня','ты знаешь анекдоты'),
         "weather": ('скажи погоду в городе', 'какая погода в городе', 'погода в городе', 'погада в городе', 'погуда в городе', 'какая погуда городе'),
         "filework": ('открой документ', 'дакумент', 'окрыть документ', 'документ')
-    }
+    },
     "acmd": {
         "acmdfile": ('закрыть файл', 'закрытие файла', 'зокрой файл', 'зокрыть файл')
 
@@ -73,7 +76,13 @@ def recognize_cmd(cmd):
    
     return RC
 
-
+def open(path):
+	if platform.system() == "Windows":
+		os.startfile(path)
+	elif platform.system() == "Darwin":
+		subprocess.Popen(["open", path])
+	else:
+		subprocess.Popen(["xdg-open", path])
  
 def execute_cmd(cmd):
     if cmd == 'ctime':
@@ -86,12 +95,13 @@ def execute_cmd(cmd):
    
     elif cmd == 'fjokes':
         # рассказать анекдот
-        speak("А на ладошах мне не попрыгать? Ахахахаха")
+        jokes = ['А на ладошах мне не попрыгать? Ахахахаха', 'Парень выпил 37 литров морковного сока и умер. Настолько улучшил зрение, что увидел тот свет...']
+        speak(random.choice(jokes))
     elif cmd == 'weather':
         print("В каком городе мне узнать погоду?")
         weath = r.listen(voice)
         owm = pyowm.OWM('6d00d1d4e704068d70191bad2673e0cc')
-        city = r.recognize_google(weath, language="ru-RU")
+        city = r.recognize_google(weath.title(), language="ru-RU")
         print("[log] Вы сказали: " + city.lower() )
 
         observ = own.weather_at_place(city)
@@ -142,7 +152,7 @@ speak_engine = pyttsx3.init()
 
 
 
-speak("Здравствуйте, пользователь!")
+speak("Здравствуйте пользователь!")
 speak("Мое имя Вики")
 speak("Жду Ваших указаний...")
  
