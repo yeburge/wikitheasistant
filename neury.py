@@ -22,9 +22,10 @@ opts = {
     "cmds": {
         "ctime": ('текущее время','сейчас времени','который час'),
         "music": ('включи музыку','музыка'),
-        "fjokes": ('расскажи анекдот','рассмеши меня','ты знаешь анекдоты'),
-        "weather": ('скажи погоду в городе', 'какая погода в городе', 'погода в городе', 'погада в городе', 'погуда в городе', 'какая погуда городе'),
-        "filework": ('открой документ', 'дакумент', 'окрыть документ', 'документ')
+        "facts": ('расскажи факты','интересные факты','факты'),
+        "weather": ('скажи погоду', 'какая погода', 'погода', 'погада', 'погуда', 'какая погуда'),
+        "filework": ('открой документ', 'дакумент', 'окрыть документ', 'документ'),
+        "search": ('начать поиск', 'поиск', 'искать')
     },
     "acmd": {
         "acmdfile": ('закрыть файл', 'закрытие файла', 'зокрой файл', 'зокрыть файл')
@@ -90,19 +91,16 @@ def execute_cmd(cmd):
         now = datetime.datetime.now()
         speak("Сейчас " + str(now.hour) + ":" + str(now.minute))
    
-    elif cmd == 'music':
-        # воспроизвести музыку
-   
-    elif cmd == 'fjokes':
+    elif cmd == 'facts':
         # рассказать анекдот
-        jokes = ['А на ладошах мне не попрыгать? Ахахахаха', 'Парень выпил 37 литров морковного сока и умер. Настолько улучшил зрение, что увидел тот свет...']
-        speak(random.choice(jokes))
+        facts = ['Гепард может развивать скорость 120 километров в час', 'В Средние века листы для рукописей делали из шкур животных', 'Нельзя кипятить воду больше одного раза. При повторном кипячении выделяется диоксин, ядовитое вещество, вызывающее рак', 'Ученые доказали, что 90% болезней возникают от стресса', 'Яд скорпиона - самая дорогая жидкость в мире', 'Пчёл и ос можно научить искать взрывчатые вещества и наркотики, как собак']
+        speak(random.choice(facts))
     elif cmd == 'weather':
         print("В каком городе мне узнать погоду?")
-        weath = r.listen(voice)
-        owm = pyowm.OWM('6d00d1d4e704068d70191bad2673e0cc')
-        city = r.recognize_google(weath.title(), language="ru-RU")
-        print("[log] Вы сказали: " + city.lower() )
+        weath = r.listen(m)
+        own = pyowm.OWM('6d00d1d4e704068d70191bad2673e0cc')
+        city = r.recognize_google(weath, language="ru-RU").title()
+        print("[log] Вы сказали: " + city )
 
         observ = own.weather_at_place(city)
         w = observ.get_weather()
@@ -110,22 +108,26 @@ def execute_cmd(cmd):
         temp = w.get_temperature('celsius')["temp"]
 
         speak("В городе " + city + ": " + w.get_detailed_status() + str(temp) )
-    elif cmd == 'filework':
-    	voice = recognizer.recognize_google(audio, language = "ru-RU").lower()
-    	acmd = voice
-    	my_file = "speech.txt"
-    	if os.path.isfile(my_file) == True:
-    		my_file = open('speech.txt', 'a')
-    		my_file.write(voice)
-    	else:
-    		my_file = open('speech.txt', 'w')
-    		my_file.write(voice)
-    	acmd = recognize_acmd(acmd)
-    	execute_acmd(acmd["acmd"])
+    #elif cmd == 'filework':
+    	#voice = recognizer.recognize_google(audio, language = "ru-RU").lower()
+    	#acmd = voice
+    	#my_file = "speech.txt"
+    	#if os.path.isfile(my_file) == True:
+    		#my_file = open('speech.txt', 'a')
+    		#my_file.write(voice)
+    	#else:
+    		#my_file = open('speech.txt', 'w')
+    		#my_file.write(voice)
+    	#acmd = recognize_acmd(acmd)
+    	#execute_acmd(acmd["acmd"])
+    elif cmd == 'search':
+    	print("Скажите запрос")
+    	voice = r.listen(m)
+    	search = r.recognize_google(voice, language="ru-RU").lower()
+    	url = "https://www.google.com/search?q="+search
+    	webbrowser.open(url)
+    	speak("Вот, что мне удалось найти")
     else:
-        search = voice
-        url = "https://www.google.com/search?q="+search
-        webbrowser.open(url)
         speak('Вот, что мне удалось найти в интернете по данному запросу')
 
 def recognize_acmd(acmd):
@@ -142,9 +144,10 @@ def recognize_acmd(acmd):
 def execute_acmd(acmd, my_file):
 	if acmd == 'acmdfile':
 		my_file.close 
+
 # запуск
 r = sr.Recognizer()
-m = sr.Microphone(device_index = 4)
+m = sr.Microphone(device_index = 11)
  
 with m as source:
     r.adjust_for_ambient_noise(source)
