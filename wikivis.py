@@ -1,4 +1,4 @@
-#Вики Voice manager v1.5(Новый Оброзец!!!!!!!)
+#Viki Voice Assistant (! Now with visual interface !)
 import os
 import os.path
 import time
