@@ -10,6 +10,7 @@ import pyowm
 import webbrowser
 import random
 from tkinter import *
+import getpass
 root = Tk()
 text = Text(width=50, height=10)
 frames = [PhotoImage(file="res/viki.gif", format='gif -index %i' %i) for i in range(37)]
@@ -74,7 +75,10 @@ def callback(recognizer, audio):
         text.insert(1.0, "[log] Голос не распознан!\n")
     except sr.RequestError as e:
         text.insert(1.0, "[log] Неизвестная ошибка!\n")
- 
+
+
+
+
 def recognize_cmd(cmd):
     RC = {'cmd': '', 'percent': 0}
     for c,v in opts['cmds'].items():
@@ -150,12 +154,12 @@ def execute_cmd(cmd):
         speak("Вот, что мне удалось найти\n\n")
         stop_listening
     elif cmd == 'openexe':
-        text.insert(1.0, "[log] Внимание! Ярлыки файлов должны быть в C:/Program Files/programs (!!! нижний регистр !!!)\n")
+        text.insert(1.0, "[log] Внимание! Ярлыки файлов должны быть на Рабочем Столе (!!! верхний регистр !!!)\n")
         text.insert(1.0, "Скажите название файла(без рассширения)\n")
         voice = r.listen(m)
-        exe = r.recognize_google(voice, language="en-EN").lower()
+        exe = r.recognize_google(voice, language="en-EN").title()
         text.insert(1.0, "[log] Открытие " + exe +".exe\n")
-        os.startfile("C:/programs/" + exe + ".lnk")
+        os.startfile("C:/Users/" + username + "/Desktop/" + exe + ".lnk")
         stop_listening
 
     else:
@@ -172,10 +176,13 @@ with m as source:
     r.adjust_for_ambient_noise(source)
 speak_engine = pyttsx3.init()
 
-
 speak("Здравствуйте пользователь!\n")
 speak("Мое имя Вики\n")
 speak("Жду Ваших указаний...\n")
+
+
+username = getpass.getuser()
+
 
 
  
